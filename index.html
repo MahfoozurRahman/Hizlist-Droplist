@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Droplist — upcoming tech, tracked</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ============ TOKENS ============ */
+:root{
+  --bg: #0E1718;
+  --bg-2: #0A1112;
+  --surface: #142225;
+  --surface-2: #1B2C2F;
+  --surface-hover: #203438;
+  --text: #EAF3F1;
+  --text-muted: #8FA6A3;
+  --text-faint: #5E7370;
+  --line: rgba(234,243,241,0.09);
+  --line-strong: rgba(234,243,241,0.18);
+
+  --phones: #9B7CFF;
+  --phones-dim: rgba(155,124,255,0.14);
+  --accessories: #F5A623;
+  --accessories-dim: rgba(245,166,35,0.14);
+  --cars: #FF6B5D;
+  --cars-dim: rgba(255,107,93,0.14);
+  --gold: #FFD166;
+
+  --focus-ring: #35D0BA;
+  --shadow: 0 20px 40px -20px rgba(0,0,0,0.6);
+
+  --font-head: 'Space Grotesk', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+:root[data-theme="light"]{
+  --bg: #F3F6F5;
+  --bg-2: #EAEFED;
+  --surface: #FFFFFF;
+  --surface-2: #F0F4F3;
+  --surface-hover: #E6EDEB;
+  --text: #10201F;
+  --text-muted: #55716D;
+  --text-faint: #8A9C99;
+  --line: rgba(16,32,31,0.10);
+  --line-strong: rgba(16,32,31,0.22);
+  --phones-dim: rgba(139,92,246,0.12);
+  --accessories-dim: rgba(245,166,35,0.16);
+  --cars-dim: rgba(255,93,93,0.13);
+  --shadow: 0 20px 40px -24px rgba(16,32,31,0.25);
+}
+
+*{ box-sizing: border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-head);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+a{ color: inherit; }
+::selection{ background: var(--focus-ring); color: #0A1112; }
+:focus-visible{ outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce){ *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; } }
+
+.wrap{ max-width: 1180px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* ============ HERO ============ */
+.hero{ position: relative; padding: 44px 0 28px; border-bottom: 1px solid var(--line); overflow: hidden; }
+.hero-top{ display:flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.brand{ display:flex; align-items:center; gap: 10px; }
+.brand-mark{ width: 34px; height:34px; flex-shrink:0; }
+.brand-name{ font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+.brand-name .dot{ color: var(--focus-ring); }
+
+.top-toggles{ display:flex; gap:8px; align-items:center; }
+
+.theme-toggle, .lang-toggle{
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  color: var(--text-muted);
+  border-radius: 100px;
+  padding: 7px 7px;
+  display:flex;
+  gap: 2px;
+}
+.theme-toggle button, .lang-toggle button{
+  all: unset; cursor:pointer; padding: 5px 11px; border-radius: 100px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+  display:flex; align-items:center; gap:6px;
+}
+.theme-toggle button[aria-pressed="true"], .lang-toggle button[aria-pressed="true"]{ background: var(--text); color: var(--bg); }
+.theme-toggle svg{ width:13px; height:13px; }
+
+.hero h1{ font-size: clamp(34px, 6vw, 58px); line-height: 0.98; letter-spacing: -0.02em; margin: 26px 0 12px; max-width: 15ch; font-weight: 700; }
+.hero p.sub{ color: var(--text-muted); font-size: 16px; max-width: 46ch; margin: 0 0 22px; line-height: 1.5; }
+
+.stat-row{ display:flex; flex-wrap: wrap; gap: 26px; font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+.stat-row b{ color: var(--text); font-size: 15px; font-family: var(--font-head); font-weight: 700; display:block; }
+.stat-row span{ display:block; margin-top: 2px; }
+
+/* ============ DAILY FIND ============ */
+.daily{
+  margin-top: 26px;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.daily::before{
+  content:"";
+  position:absolute; top:-40%; right:-10%;
+  width: 240px; height:240px; border-radius:50%;
+  background: radial-gradient(circle, var(--focus-ring) 0%, transparent 70%);
+  opacity: 0.14;
+  pointer-events:none;
+}
+.daily-eyebrow{
+  display:flex; align-items:center; gap:8px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--focus-ring);
+  margin-bottom: 10px;
+}
+.daily-eyebrow .pulse{
+  width:6px; height:6px; border-radius:50%; background: var(--focus-ring);
+  box-shadow: 0 0 0 0 rgba(53,208,186,0.6);
+  animation: pulse 2.2s infinite;
+}
+@keyframes pulse{
+  0%{ box-shadow: 0 0 0 0 rgba(53,208,186,0.5); }
+  70%{ box-shadow: 0 0 0 8px rgba(53,208,186,0); }
+  100%{ box-shadow: 0 0 0 0 rgba(53,208,186,0); }
+}
+.daily-headline{ font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 6px; max-width: 62ch; position:relative; }
+.daily-body{ font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 64ch; position:relative; }
+.daily-foot{ display:flex; justify-content: space-between; align-items:center; margin-top: 14px; flex-wrap:wrap; gap:10px; }
+.daily-date{ font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+.archive-btn{
+  all:unset; cursor:pointer; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted);
+  border: 1px solid var(--line-strong); border-radius: 100px; padding: 6px 13px;
+  display:flex; align-items:center; gap:6px;
+}
+.archive-btn svg{ width:12px; height:12px; transition: transform .15s ease; }
+.archive-btn.open svg{ transform: rotate(180deg); }
+
+.archive{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease;
+}
+.archive.open{ max-height: 600px; overflow-y:auto; }
+.archive-list{ margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; display:flex; flex-direction:column; gap:12px; }
+.archive-item{ display:flex; gap: 12px; }
+.archive-item .adate{ font-family: var(--font-mono); font-size: 10.5px; color: var(--text-faint); flex-shrink:0; width:64px; padding-top:2px; }
+.archive-item .ahead{ font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+.archive-item .abody{ font-size: 12.5px; color: var(--text-muted); line-height:1.5; }
+.archive-empty{ font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); padding: 8px 0; }
+
+/* ============ CONTROLS ============ */
+.controls{
+  position: sticky; top: 0; z-index: 20; background: var(--bg); padding: 16px 0;
+  border-bottom: 1px solid var(--line); display:flex; flex-wrap:wrap; gap: 12px;
+  align-items:center; justify-content: space-between;
+}
+.pills{ display:flex; gap: 8px; flex-wrap: wrap; }
+.pill{
+  all:unset; cursor:pointer; font-family: var(--font-mono); font-size: 12.5px; padding: 8px 14px;
+  border-radius: 100px; border: 1px solid var(--line-strong); color: var(--text-muted);
+  display:flex; align-items:center; gap: 7px; transition: border-color .15s ease, color .15s ease;
+}
+.pill .swatch{ width:7px; height:7px; border-radius:50%; background: currentColor; flex-shrink:0; }
+.pill:hover{ border-color: var(--line-strong); color: var(--text); }
+.pill[aria-pressed="true"]{ color: var(--bg); border-color: transparent; }
+.pill[data-cat="all"][aria-pressed="true"]{ background: var(--text); }
+.pill[data-cat="phones"][aria-pressed="true"]{ background: var(--phones); }
+.pill[data-cat="accessories"][aria-pressed="true"]{ background: var(--accessories); }
+.pill[data-cat="cars"][aria-pressed="true"]{ background: var(--cars); }
+.pill[data-cat="phones"]{ color: var(--phones); }
+.pill[data-cat="accessories"]{ color: var(--accessories); }
+.pill[data-cat="cars"]{ color: var(--cars); }
+.pill[data-cat="all"]{ color: var(--text-muted); }
+
+.tools{ display:flex; gap: 8px; align-items:center; flex-wrap: wrap; }
+
+.search-box{ position:relative; display:flex; align-items:center; }
+.search-box svg{ position:absolute; left: 11px; width:14px; height:14px; color: var(--text-faint); pointer-events:none; }
+.search-box input{
+  font-family: var(--font-mono); font-size: 12.5px; background: var(--surface);
+  border: 1px solid var(--line-strong); color: var(--text); border-radius: 100px;
+  padding: 9px 14px 9px 32px; width: 168px; transition: width .2s ease, border-color .15s ease;
+}
+.search-box input::placeholder{ color: var(--text-faint); }
+.search-box input:focus{ width: 210px; border-color: var(--focus-ring); }
+
+select{
+  font-family: var(--font-mono); font-size: 12px; background: var(--surface);
+  border: 1px solid var(--line-strong); color: var(--text-muted); border-radius: 100px;
+  padding: 9px 12px; cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238FA6A3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 28px;
+}
+
+.view-toggle{ display:flex; border: 1px solid var(--line-strong); border-radius: 100px; overflow: hidden; }
+.view-toggle button{ all:unset; cursor:pointer; padding: 8px 11px; display:flex; color: var(--text-faint); }
+.view-toggle button[aria-pressed="true"]{ background: var(--surface-2); color: var(--text); }
+.view-toggle svg{ width:14px; height:14px; }
+
+.chip-toggle{
+  all:unset; cursor:pointer; display:flex; align-items:center; gap:6px; font-family: var(--font-mono);
+  font-size: 12px; color: var(--text-faint); border: 1px solid var(--line-strong); border-radius: 100px; padding: 8px 13px;
+}
+.chip-toggle svg{ width:13px; height:13px; }
+.chip-toggle.fav[aria-pressed="true"]{ color: var(--gold); border-color: rgba(255,209,102,0.5); }
+.chip-toggle.fav[aria-pressed="true"] svg{ fill: var(--gold); }
+.chip-toggle.must[aria-pressed="true"]{ color: var(--cars); border-color: rgba(255,107,93,0.5); }
+.chip-toggle.must[aria-pressed="true"] svg{ fill: var(--cars); }
+
+/* ============ GRID ============ */
+.grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 26px; }
+.grid.list{ grid-template-columns: 1fr; }
+
+.card{
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px 18px 16px; position: relative; overflow:hidden; display:flex;
+  flex-direction: column; gap: 12px; transition: border-color .15s ease, transform .15s ease;
+}
+.card:hover{ border-color: var(--line-strong); }
+.card::before{ content:""; position:absolute; top:0; left:0; right:0; height: 3px; background: var(--cat-color); }
+
+.grid.list .card{ flex-direction: row; align-items:center; gap: 18px; }
+.grid.list .card-icon{ margin-bottom:0; }
+.grid.list .card-body{ flex:1; }
+.grid.list .card-specs{ max-width: 320px; }
+.grid.list .card-blurb{ display:none; }
+
+.card-top{ display:flex; justify-content: space-between; align-items:flex-start; }
+.card-icon{ width: 40px; height:40px; border-radius: 10px; background: var(--cat-dim); color: var(--cat-color); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.card-icon svg{ width:20px; height:20px; }
+
+.card-actions{ display:flex; align-items:center; gap:4px; }
+.star-btn{ all:unset; cursor:pointer; color: var(--text-faint); padding: 4px; display:flex; }
+.star-btn svg{ width:16px; height:16px; transition: transform .15s ease; }
+.star-btn:hover svg{ transform: scale(1.15); }
+.star-btn[aria-pressed="true"]{ color: var(--gold); }
+.star-btn[aria-pressed="true"] svg{ fill: var(--gold); }
+
+.card-body{ display:flex; flex-direction:column; gap:6px; }
+.card-cat{ font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.02em; color: var(--cat-color); }
+.card-name-row{ display:flex; align-items:center; gap:8px; flex-wrap: wrap; }
+.card-name{ font-size: 18px; font-weight: 600; letter-spacing: -0.01em; line-height:1.25; }
+.must-badge{
+  display:inline-flex; align-items:center; gap:4px; font-family: var(--font-mono); font-size: 9.5px;
+  color: var(--cars); background: var(--cars-dim); border-radius: 100px; padding: 2px 8px 2px 6px;
+  white-space: nowrap;
+}
+.must-badge svg{ width:9px; height:9px; }
+.card-meta{ font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); display:flex; gap: 10px; flex-wrap:wrap; }
+.status{ padding: 1px 8px; border-radius: 100px; font-size: 10.5px; }
+.status.confirmed{ background: rgba(66,209,148,0.14); color:#5BD9A3; }
+.status.expected{ background: rgba(245,166,35,0.14); color: var(--accessories); }
+.status.rumored{ background: rgba(155,124,255,0.14); color: var(--phones); }
+
+.card-specs{ display:flex; flex-wrap:wrap; gap: 6px; margin-top: 2px; }
+.chip{ font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--line); padding: 4px 9px; border-radius: 6px; }
+.card-blurb{ font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-top: 2px; }
+
+.empty{ grid-column: 1 / -1; text-align:center; padding: 70px 20px; color: var(--text-muted); }
+.empty svg{ width:32px; height:32px; margin-bottom:14px; color: var(--text-faint); }
+.empty p{ font-family: var(--font-mono); font-size: 13px; }
+
+/* ============ PAGINATION ============ */
+.pagination{ display:flex; align-items:center; justify-content: center; gap: 6px; margin-top: 40px; flex-wrap: wrap; }
+.page-btn{
+  all:unset; cursor:pointer; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted);
+  width: 32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius: 8px; border: 1px solid transparent;
+}
+.page-btn:hover{ border-color: var(--line-strong); }
+.page-btn[aria-current="true"]{ background: var(--text); color: var(--bg); }
+.page-btn.nav{ color: var(--text-faint); }
+.page-btn.nav svg{ width:14px; height:14px; }
+.page-btn[disabled]{ opacity: 0.3; cursor:default; }
+.page-ellipsis{ color: var(--text-faint); font-family: var(--font-mono); font-size: 12px; padding: 0 2px; }
+.page-info{ text-align:center; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); margin-top: 10px; }
+
+/* ============ FOOTER ============ */
+footer{ border-top: 1px solid var(--line); margin-top: 60px; padding-top: 22px; color: var(--text-faint); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.7; }
+footer a{ color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+@media (max-width: 900px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px){
+  .grid{ grid-template-columns: 1fr; }
+  .controls{ align-items: stretch; }
+  .tools{ justify-content: space-between; width:100%; }
+  .search-box input, .search-box input:focus{ width: 100%; }
+  .search-box{ order: -1; width:100%; }
+  .grid.list .card{ flex-direction: column; align-items: stretch; }
+  .grid.list .card-blurb{ display: block; }
+  .hero-top{ flex-direction: column; }
+  .top-toggles{ width:100%; justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-top">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 34 34" fill="none">
+          <circle cx="17" cy="17" r="16" stroke="var(--focus-ring)" stroke-width="1.4"/>
+          <circle cx="17" cy="17" r="4.5" fill="var(--focus-ring)"/>
+          <circle cx="17" cy="3.4" r="2.2" fill="#9B7CFF"/>
+          <circle cx="30.6" cy="17" r="2.2" fill="#F5A623"/>
+          <circle cx="17" cy="30.6" r="2.2" fill="#FF6B5D"/>
+        </svg>
+        <span class="brand-name">droplist<span class="dot">.</span></span>
+      </div>
+      <div class="top-toggles">
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" id="lang-en" aria-pressed="true">EN</button>
+          <button type="button" id="lang-tr" aria-pressed="false">TR</button>
+        </div>
+        <div class="theme-toggle" role="group" aria-label="Theme">
+          <button type="button" id="theme-dark" aria-pressed="true">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M17 10.5A7.5 7.5 0 0 1 8 17.9 7.5 7.5 0 1 0 17 10.5z"/></svg>
+          </button>
+          <button type="button" id="theme-light" aria-pressed="false">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="3.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M4.2 15.8l1.4-1.4M14.4 5.6l1.4-1.4"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <h1 id="t-h1">Every launch worth waiting for.</h1>
+    <p class="sub" id="t-sub">Phones, accessories and cars that are announced, rumored or already on the way — sorted, filtered and tracked in one deck.</p>
+
+    <div class="stat-row">
+      <div><b id="stat-total">–</b><span id="t-stat-tracked">tracked</span></div>
+      <div><b id="stat-phones">–</b><span id="t-stat-phones">phones</span></div>
+      <div><b id="stat-accessories">–</b><span id="t-stat-accessories">accessories</span></div>
+      <div><b id="stat-cars">–</b><span id="t-stat-cars">cars</span></div>
+    </div>
+
+    <div class="daily" id="daily-panel">
+      <div class="daily-eyebrow"><span class="pulse"></span><span id="t-daily-eyebrow">Today's find — auto-generated</span></div>
+      <div class="daily-headline" id="daily-headline">Setting things up…</div>
+      <div class="daily-body" id="daily-body"></div>
+      <div class="daily-foot">
+        <span class="daily-date" id="daily-date"></span>
+        <button class="archive-btn" id="archive-btn">
+          <span id="t-archive-btn">Past finds</span>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="archive" id="archive">
+        <div class="archive-list" id="archive-list"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="pills" id="cat-pills" role="group" aria-label="Category">
+      <button class="pill" data-cat="all" aria-pressed="true"><span class="swatch"></span><span class="t-cat-all">All</span></button>
+      <button class="pill" data-cat="phones" aria-pressed="false"><span class="swatch"></span><span class="t-cat-phones">Phones</span></button>
+      <button class="pill" data-cat="accessories" aria-pressed="false"><span class="swatch"></span><span class="t-cat-accessories">Accessories</span></button>
+      <button class="pill" data-cat="cars" aria-pressed="false"><span class="swatch"></span><span class="t-cat-cars">Cars</span></button>
+    </div>
+
+    <div class="tools">
+      <div class="search-box">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l4.5 4.5" stroke-linecap="round"/></svg>
+        <input type="text" id="search" aria-label="Search">
+      </div>
+
+      <button class="chip-toggle must" id="must-only" aria-pressed="false">
+        <svg viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.4" fill="none"><path d="M10 2s4 4.5 4 8.5a4 4 0 0 1-8 0C6 7 8 5 8 5s.5 2 2 2c0-2-1-3.5 0-5z" stroke-linejoin="round"/></svg>
+        <span id="t-must-only">must-haves</span>
+      </button>
+
+      <button class="chip-toggle fav" id="fav-only" aria-pressed="false">
+        <svg viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.4" fill="none"><path d="M10 2.6l2.32 4.87 5.28.8-3.8 3.83.9 5.4L10 15l-4.7 2.5.9-5.4-3.8-3.83 5.28-.8z" stroke-linejoin="round"/></svg>
+        <span id="t-fav-only">starred</span>
+      </button>
+
+      <select id="sort" aria-label="Sort">
+        <option value="soonest" id="t-sort-soonest">Soonest first</option>
+        <option value="latest" id="t-sort-latest">Latest first</option>
+        <option value="az" id="t-sort-az">Name A–Z</option>
+        <option value="maker" id="t-sort-maker">By maker</option>
+      </select>
+
+      <select id="per-page" aria-label="Items per page">
+        <option value="6">6</option>
+        <option value="9" selected>9</option>
+        <option value="12">12</option>
+        <option value="24">24</option>
+      </select>
+
+      <div class="view-toggle" role="group" aria-label="Layout">
+        <button type="button" id="view-grid" aria-pressed="true" aria-label="Grid view">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+        </button>
+        <button type="button" id="view-list" aria-pressed="false" aria-label="List view">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="2" y="3" width="16" height="3" rx="1.2"/><rect x="2" y="8.5" width="16" height="3" rx="1.2"/><rect x="2" y="14" width="16" height="3" rx="1.2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="grid" id="grid"></div>
+    <div class="pagination" id="pagination"></div>
+    <div class="page-info" id="page-info"></div>
+  </main>
+
+  <footer id="t-footer">
+    Timelines mix confirmed dates, official teasers and current reporting as of September 2026 — expect dates marked "expected" or "rumored" to shift. The daily find above is generated automatically once a day. Add rows to the DATA array in this file's source to extend any section; pagination, search and sort scale automatically. Sourced from manufacturer announcements and outlets including SamMobile, Smartprix, InsideEVs, MeraEV, Croma, Macworld and Hypebeast.
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA — append as many rows as you like to any category.
+   Pagination, search, sort and stats all recompute automatically.
+   mustHave marks a small curated set of standout picks.
+   blurb_tr / specs_tr (via SPEC_TR map) hold Turkish text.
+   ============================================================ */
+const DATA = [
+  { id:"p1", cat:"phones", name:"Galaxy S26 Ultra", maker:"Samsung", date:"2026-02-25", status:"confirmed", mustHave:true,
+    specs:["Unpacked Feb 25","3 flagship models","Buds 4 Pro alongside"],
+    blurb:"Headlines Samsung's first Unpacked of the year, launching alongside two new Galaxy Buds 4 earbuds.",
+    blurb_tr:"Samsung'un yılın ilk Unpacked etkinliğine damgasını vuruyor; iki yeni Galaxy Buds 4 kulaklıkla birlikte tanıtılacak." },
+  { id:"p2", cat:"phones", name:"Realme 16 Pro+ 5G", maker:"Realme", date:"2026-01-06", status:"confirmed",
+    specs:["200MP main","50MP periscope","Refreshed design"],
+    blurb:"The Pro+ model adds a periscope telephoto lens on top of the series' 200MP main sensor.",
+    blurb_tr:"Pro+ modeli, serinin 200MP ana sensörüne ek olarak periskop telefoto lens sunuyor." },
+  { id:"p3", cat:"phones", name:"Redmi Note 15 5G", maker:"Xiaomi", date:"2026-01-06", status:"confirmed",
+    specs:["Global + India","Camera refinements","AI features"],
+    blurb:"Launches the same day as Realme's Pro series, with a shared focus on camera and on-device AI.",
+    blurb_tr:"Realme'nin Pro serisiyle aynı gün çıkıyor; kamera ve cihaz üstü yapay zekâ öne çıkan noktalar." },
+  { id:"p4", cat:"phones", name:"Lava Bold N2 5G", maker:"Lava", date:"2026-06-03", status:"confirmed",
+    specs:["UNISOC T8200","4GB+64GB","6000mAh","IP64","Android 16"],
+    blurb:"An entry-level 5G phone aimed at first-time upgraders moving off ageing 4G handsets.",
+    blurb_tr:"İlk kez 5G'ye geçenleri hedefleyen giriş seviyesi bir telefon; eski 4G cihazlardan yükseltme yapanlar için düşünülmüş." },
+  { id:"p5", cat:"phones", name:"Oppo Find X9 Ultra", maker:"Oppo", date:"2026-04-15", status:"expected", mustHave:true,
+    specs:["6.82\" QHD LTPO","120Hz","Dolby Vision"],
+    blurb:"Expected to arrive with very little restraint — a camera-first flagship built to headline April.",
+    blurb_tr:"Frenlerinden hiç bahsetmeyen bir amiral gemisi bekleniyor — Nisan ayına damga vuracak kamera odaklı bir cihaz." },
+  { id:"p6", cat:"phones", name:"Motorola Edge 70 Pro+", maker:"Motorola", date:"2026-06-15", status:"expected",
+    specs:["Mid-range","India launch"],
+    blurb:"One of the confirmed headline launches as the market shifts toward mid-range volume sellers.",
+    blurb_tr:"Pazar orta-üst segmente kayarken haziran ayının onaylı öne çıkan lansmanlarından biri." },
+  { id:"p7", cat:"phones", name:"iPhone 18 Pro", maker:"Apple", date:"2026-09-15", status:"rumored",
+    specs:["Annual cycle","Camera software","Deeper AI"],
+    blurb:"Expected to refine rather than reinvent, building on the prior generation's efficiency gains.",
+    blurb_tr:"Köklü bir yenilikten çok, önceki neslin verimlilik kazanımları üzerine ince ayar bekleniyor." },
+  { id:"p8", cat:"phones", name:"Apple Foldable iPhone", maker:"Apple", date:"2026-09-20", status:"rumored",
+    specs:["First Apple foldable","Timing contested"],
+    blurb:"Long-rumored and still unconfirmed — reporting is split on whether this slips further out.",
+    blurb_tr:"Uzun zamandır konuşuluyor ama hâlâ doğrulanmadı — haberler daha da ertelenip ertelenmeyeceği konusunda bölünmüş durumda." },
+
+  { id:"a1", cat:"accessories", name:"Galaxy Buds 4 Pro", maker:"Samsung", date:"2026-02-25", status:"confirmed",
+    specs:["Unpacked reveal","Pairs with S26"],
+    blurb:"One of two new Buds models expected alongside the Galaxy S26 series at Unpacked.",
+    blurb_tr:"Unpacked etkinliğinde Galaxy S26 serisiyle birlikte tanıtılması beklenen iki yeni Buds modelinden biri." },
+  { id:"a2", cat:"accessories", name:"Melomania A100", maker:"Cambridge Audio", date:"2026-01-08", status:"confirmed", mustHave:true,
+    specs:["Hi-res wireless","11h battery","Multipoint"],
+    blurb:"High-fidelity earbuds built for listeners who care about resolution over gimmicks.",
+    blurb_tr:"Çözünürlüğü önemseyen dinleyiciler için üretilmiş yüksek çözünürlüklü kulaklıklar." },
+  { id:"a3", cat:"accessories", name:"CES 2026 accessory lineup", maker:"Anker", date:"2026-01-06", status:"confirmed",
+    specs:["Next-gen chargers","Projectors","Smart home"],
+    blurb:"An expansive showing spanning charging, projection and smart-home hardware in one booth.",
+    blurb_tr:"Şarj teknolojisinden projeksiyona, akıllı ev donanımına uzanan geniş bir tanıtım." },
+  { id:"a4", cat:"accessories", name:"AirTag 2", maker:"Apple", date:"2026-11-01", status:"rumored",
+    specs:["Surfaced in iOS build","Long overdue"],
+    blurb:"Spotted in an early OS build after mysteriously sitting ready-but-unreleased for months.",
+    blurb_tr:"Aylardır hazır ama yayınlanmamış hâlde beklerken erken bir işletim sistemi sürümünde ortaya çıktı." },
+  { id:"a5", cat:"accessories", name:"Smart home hub", maker:"Apple", date:"2026-11-01", status:"rumored",
+    specs:["Base + wall-mount","Camera accessory rumored"],
+    blurb:"Two form factors reportedly planned, alongside a still-unidentified companion accessory.",
+    blurb_tr:"İki farklı form faktörü planlandığı bildiriliyor; hâlâ kimliği belirsiz bir yan aksesuarla birlikte." },
+  { id:"a6", cat:"accessories", name:"Pixelsnap Charger", maker:"Google", date:"2026-02-01", status:"confirmed", mustHave:true,
+    specs:["Magnetic","Not Pixel-exclusive"],
+    blurb:"Google has confirmed this works across phones, not just its own — unusual for a first-party magnet.",
+    blurb_tr:"Google bunun sadece kendi telefonlarıyla değil, diğer telefonlarla da çalıştığını doğruladı — ilk taraf bir mıknatıs için alışılmadık bir durum." },
+  { id:"a7", cat:"accessories", name:"3-in-1 Foldable Charging Stand", maker:"Satechi", date:"2026-01-06", status:"confirmed",
+    specs:["Qi2 25W","Travel-folding"],
+    blurb:"A compact charging stand built to disappear into a bag between trips.",
+    blurb_tr:"Seyahatler arasında çantada kaybolacak kadar kompakt bir şarj standı." },
+  { id:"a8", cat:"accessories", name:"Galaxy Watch Ultra 2", maker:"Samsung", date:"2026-08-01", status:"rumored",
+    specs:["Two models rumored","Differences unclear"],
+    blurb:"Reporting suggests a second Ultra variant, though what separates the two is still unconfirmed.",
+    blurb_tr:"İkinci bir Ultra modeli söyleniyor, ancak ikisini birbirinden ayıran özellik hâlâ netleşmedi." },
+
+  { id:"c1", cat:"cars", name:"Kia Syros EV", maker:"Kia", date:"2026-07-23", status:"confirmed", mustHave:true,
+    specs:["42/51.4kWh","443–526km range","5 trims"],
+    blurb:"The most imminent arrival in its class, already open for bookings ahead of launch.",
+    blurb_tr:"Sınıfının en yakın tarihli çıkışı; lansman öncesinde ön siparişe açık." },
+  { id:"c2", cat:"cars", name:"Tata Safari EV", maker:"Tata", date:"2026-10-25", status:"expected",
+    specs:["65/75kWh","538–627km range","AWD on top trim"],
+    blurb:"India's first mainstream 7-seat electric SUV from a major domestic brand.",
+    blurb_tr:"Büyük bir yerli markadan Hindistan'ın ilk ana akım 7 koltuklu elektrikli SUV'u." },
+  { id:"c3", cat:"cars", name:"Mahindra BE 07", maker:"Mahindra", date:"2026-10-10", status:"expected",
+    specs:["INGLO platform","60–80kWh"],
+    blurb:"A larger SUV built on Mahindra's dedicated electric platform, deepening the BE lineup.",
+    blurb_tr:"Mahindra'nın özel elektrikli platformu üzerine kurulu, BE serisini derinleştiren daha büyük bir SUV." },
+  { id:"c4", cat:"cars", name:"Acura RSX", maker:"Acura", date:"2026-05-01", status:"expected",
+    specs:["Dual-motor crossover coupe","Asimo OS","300+ mile range"],
+    blurb:"The tip of the spear for Honda and Acura's software-defined EV platform.",
+    blurb_tr:"Honda ve Acura'nın yazılım tanımlı elektrikli platformunun ilk temsilcisi." },
+  { id:"c5", cat:"cars", name:"Renault 4 E-Tech", maker:"Renault", date:"2026-05-01", status:"expected",
+    specs:["Retro hatchback","Electric"],
+    blurb:"Brings back a beloved nameplate as a compact, city-focused electric hatchback.",
+    blurb_tr:"Sevilen bir modeli, kompakt ve şehir odaklı elektrikli bir hatchback olarak geri getiriyor." },
+  { id:"c6", cat:"cars", name:"Porsche Cayenne Electric", maker:"Porsche", date:"2026-09-01", status:"expected", mustHave:true,
+    specs:["Full EV Cayenne","Dual-motor expected"],
+    blurb:"The performance SUV's long-awaited fully electric version, alongside the existing combustion range.",
+    blurb_tr:"Performans SUV'unun uzun zamandır beklenen tam elektrikli versiyonu, mevcut benzinli seriyle birlikte sunulacak." },
+  { id:"c7", cat:"cars", name:"Range Rover Electric", maker:"Land Rover", date:"2026-11-01", status:"expected",
+    specs:["Flagship EV SUV","Luxury positioning"],
+    blurb:"Land Rover's answer to electric luxury SUV rivals, years into development.",
+    blurb_tr:"Land Rover'ın elektrikli lüks SUV rakiplerine yanıtı, yıllar süren geliştirmenin ardından geliyor." },
+  { id:"c8", cat:"cars", name:"VinFast VF3", maker:"VinFast", date:"2026-06-01", status:"expected",
+    specs:["Budget EV","Global expansion"],
+    blurb:"A compact, low-cost EV central to VinFast's push into new markets this year.",
+    blurb_tr:"VinFast'in yeni pazarlara açılma stratejisinin merkezinde, kompakt ve uygun fiyatlı bir elektrikli araç." },
+];
+
+/* Spec-chip phrase translations — falls back to the original string when missing. */
+const SPEC_TR = {
+  "Unpacked Feb 25":"25 Şubat Unpacked", "3 flagship models":"3 amiral gemisi model", "Buds 4 Pro alongside":"Buds 4 Pro ile birlikte",
+  "200MP main":"200MP ana kamera", "50MP periscope":"50MP periskop", "Refreshed design":"Yenilenmiş tasarım",
+  "Global + India":"Küresel + Hindistan", "Camera refinements":"Kamera iyileştirmeleri", "AI features":"Yapay zekâ özellikleri",
+  "Mid-range":"Orta segment", "India launch":"Hindistan lansmanı", "Annual cycle":"Yıllık döngü",
+  "Camera software":"Kamera yazılımı", "Deeper AI":"Daha derin yapay zekâ", "First Apple foldable":"Apple'ın ilk katlanabilir telefonu",
+  "Timing contested":"Zamanlama tartışmalı", "Unpacked reveal":"Unpacked'te tanıtım", "Pairs with S26":"S26 ile birlikte",
+  "Hi-res wireless":"Yüksek çözünürlüklü kablosuz", "11h battery":"11 saat pil", "Next-gen chargers":"Yeni nesil şarj cihazları",
+  "Projectors":"Projeksiyon cihazları", "Smart home":"Akıllı ev", "Surfaced in iOS build":"iOS sürümünde ortaya çıktı",
+  "Long overdue":"Çoktan gecikmiş", "Base + wall-mount":"Masaüstü + duvar montajlı", "Camera accessory rumored":"Kamera aksesuarı söyleniyor",
+  "Magnetic":"Mıknatıslı", "Not Pixel-exclusive":"Sadece Pixel'e özel değil", "Travel-folding":"Seyahat için katlanabilir",
+  "Two models rumored":"İki model söyleniyor", "Differences unclear":"Farklar belirsiz",
+  "443–526km range":"443–526 km menzil", "5 trims":"5 donanım seviyesi", "538–627km range":"538–627 km menzil",
+  "AWD on top trim":"Üst donanımda AWD", "Dual-motor crossover coupe":"Çift motorlu crossover coupe",
+  "300+ mile range":"480+ km menzil", "Retro hatchback":"Retro hatchback", "Electric":"Elektrikli",
+  "Full EV Cayenne":"Tam elektrikli Cayenne", "Dual-motor expected":"Çift motor bekleniyor",
+  "Flagship EV SUV":"Amiral gemisi elektrikli SUV", "Luxury positioning":"Lüks konumlandırma",
+  "Budget EV":"Bütçe dostu elektrikli araç", "Global expansion":"Küresel genişleme",
+};
+
+/* ============ ICONS ============ */
+const ICONS = {
+  phones: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M10.5 18.2h3" stroke-linecap="round"/></svg>',
+  accessories: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2.5" y="13" width="4.5" height="6" rx="1.6"/><rect x="17" y="13" width="4.5" height="6" rx="1.6"/></svg>',
+  cars: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 15.5l1.4-4.6A2 2 0 0 1 6.8 9.5h10.4a2 2 0 0 1 1.9 1.4l1.4 4.6"/><rect x="2.5" y="15.5" width="19" height="4" rx="1.4"/><circle cx="7" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg>',
+};
+const MUST_ICON = '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2s4 4.5 4 8.5a4 4 0 0 1-8 0C6 7 8 5 8 5s.5 2 2 2c0-2-1-3.5 0-5z"/></svg>';
+
+/* ============ STRINGS ============ */
+const STR = {
+  en:{
+    h1:"Every launch worth waiting for.",
+    sub:"Phones, accessories and cars that are announced, rumored or already on the way — sorted, filtered and tracked in one deck.",
+    tracked:"tracked", phones:"phones", accessories:"accessories", cars:"cars",
+    catAll:"All", catPhones:"Phones", catAccessories:"Accessories", catCars:"Cars",
+    searchPh:"Search a name or spec…", mustOnly:"must-haves", favOnly:"starred",
+    sortSoonest:"Soonest first", sortLatest:"Latest first", sortAz:"Name A–Z", sortMaker:"By maker",
+    empty:"Nothing matches that filter yet.",
+    footer:'Timelines mix confirmed dates, official teasers and current reporting as of September 2026 — expect dates marked "expected" or "rumored" to shift. The daily find above is generated automatically once a day. Add rows to the DATA array in the source of this page to extend any section; pagination, search and sort scale automatically. Sourced from manufacturer announcements and outlets including SamMobile, Smartprix, InsideEVs, MeraEV, Croma, Macworld and Hypebeast.',
+    status:{confirmed:"confirmed",expected:"expected",rumored:"rumored"},
+    dailyEyebrow:"Today's find — auto-generated", archiveBtn:"Past finds", archiveEmpty:"No earlier finds yet.",
+    dailySetup:"Loading…", dailyPending:"No daily find published yet — the first automated run will add one here.",
+    dailyError:"Couldn't generate today's find. Try reloading the page.",
+    mustHave:"Must-have",
+  },
+  tr:{
+    h1:"Beklemeye değer her lansman.",
+    sub:"Duyurulan, söylentisi çıkan ya da yolda olan telefonlar, aksesuarlar ve arabalar — tek ekranda sıralanır, filtrelenir ve takip edilir.",
+    tracked:"takipte", phones:"telefon", accessories:"aksesuar", cars:"araba",
+    catAll:"Tümü", catPhones:"Telefonlar", catAccessories:"Aksesuarlar", catCars:"Arabalar",
+    searchPh:"İsim ya da özellik ara…", mustOnly:"olmazsa olmaz", favOnly:"yıldızlı",
+    sortSoonest:"En yakın tarih", sortLatest:"En uzak tarih", sortAz:"İsme göre A–Z", sortMaker:"Üreticiye göre",
+    empty:"Bu filtreye uyan bir şey yok.",
+    footer:'Tarihler onaylanmış duyuruları, resmi tanıtımları ve Eylül 2026 itibarıyla güncel haberleri bir arada gösterir — "bekleniyor" ya da "söylenti" etiketli tarihlerin değişebileceğini unutmayın. Yukarıdaki günlük bulgu her gün otomatik olarak oluşturulur. Herhangi bir bölümü genişletmek için bu dosyanın kaynağındaki DATA dizisine satır ekleyin; sayfalama, arama ve sıralama otomatik olarak ölçeklenir. Kaynaklar arasında SamMobile, Smartprix, InsideEVs, MeraEV, Croma, Macworld ve Hypebeast bulunuyor.',
+    status:{confirmed:"onaylandı",expected:"bekleniyor",rumored:"söylenti"},
+    dailyEyebrow:"Bugünün bulgusu — otomatik oluşturuldu", archiveBtn:"Geçmiş bulgular", archiveEmpty:"Henüz daha eski bir bulgu yok.",
+    dailySetup:"Yükleniyor…", dailyPending:"Henüz yayımlanmış bir günlük bulgu yok — ilk otomatik çalıştırmadan sonra burada görünecek.",
+    dailyError:"Bugünün bulgusu oluşturulamadı. Sayfayı yenilemeyi deneyin.",
+    mustHave:"Olmazsa olmaz",
+  }
+};
+
+const CAT_KEY = { phones:"catPhones", accessories:"catAccessories", cars:"catCars" };
+
+/* ============ STATE ============ */
+let state = { cat:"all", search:"", sort:"soonest", perPage:9, page:1, view:"grid", favOnly:false, mustOnly:false, lang:"en" };
+let favorites = new Set();
+try{ favorites = new Set(JSON.parse(localStorage.getItem("droplist_favorites")||"[]")); }catch(e){}
+function saveFavorites(){ try{ localStorage.setItem("droplist_favorites", JSON.stringify([...favorites])); }catch(e){} }
+
+/* ============ i18n APPLY ============ */
+function applyLang(){
+  const s = STR[state.lang];
+  document.getElementById("t-h1").textContent = s.h1;
+  document.getElementById("t-sub").textContent = s.sub;
+  document.getElementById("t-stat-tracked").textContent = s.tracked;
+  document.getElementById("t-stat-phones").textContent = s.phones;
+  document.getElementById("t-stat-accessories").textContent = s.accessories;
+  document.getElementById("t-stat-cars").textContent = s.cars;
+  document.querySelector(".t-cat-all").textContent = s.catAll;
+  document.querySelector(".t-cat-phones").textContent = s.catPhones;
+  document.querySelector(".t-cat-accessories").textContent = s.catAccessories;
+  document.querySelector(".t-cat-cars").textContent = s.catCars;
+  document.getElementById("search").placeholder = s.searchPh;
+  document.getElementById("t-must-only").textContent = s.mustOnly;
+  document.getElementById("t-fav-only").textContent = s.favOnly;
+  document.getElementById("t-sort-soonest").textContent = s.sortSoonest;
+  document.getElementById("t-sort-latest").textContent = s.sortLatest;
+  document.getElementById("t-sort-az").textContent = s.sortAz;
+  document.getElementById("t-sort-maker").textContent = s.sortMaker;
+  document.getElementById("t-footer").textContent = s.footer;
+  document.getElementById("t-daily-eyebrow").textContent = s.dailyEyebrow;
+  document.getElementById("t-archive-btn").textContent = s.archiveBtn;
+  renderGrid();
+  renderDailyContent();
+}
+
+/* ============ DERIVE + RENDER GRID ============ */
+function getFiltered(){
+  let rows = DATA.filter(d => {
+    if (state.cat !== "all" && d.cat !== state.cat) return false;
+    if (state.favOnly && !favorites.has(d.id)) return false;
+    if (state.mustOnly && !d.mustHave) return false;
+    if (state.search){
+      const q = state.search.toLowerCase();
+      const hay = (d.name + " " + d.maker + " " + d.specs.join(" ") + " " + d.blurb).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  rows.sort((a,b) => {
+    if (state.sort === "soonest") return a.date.localeCompare(b.date);
+    if (state.sort === "latest") return b.date.localeCompare(a.date);
+    if (state.sort === "az") return a.name.localeCompare(b.name);
+    if (state.sort === "maker") return a.maker.localeCompare(b.maker);
+    return 0;
+  });
+  return rows;
+}
+
+function formatDate(iso, lang){
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString(lang === "tr" ? "tr-TR" : undefined, { month:"short", day:"numeric", year:"numeric" });
+}
+
+function renderStats(){
+  document.getElementById("stat-total").textContent = DATA.length;
+  document.getElementById("stat-phones").textContent = DATA.filter(d=>d.cat==="phones").length;
+  document.getElementById("stat-accessories").textContent = DATA.filter(d=>d.cat==="accessories").length;
+  document.getElementById("stat-cars").textContent = DATA.filter(d=>d.cat==="cars").length;
+}
+
+function localSpecs(d){
+  if (state.lang !== "tr") return d.specs;
+  return d.specs.map(s => SPEC_TR[s] || s);
+}
+
+function renderCard(d){
+  const s = STR[state.lang];
+  const starred = favorites.has(d.id);
+  const blurb = state.lang === "tr" ? (d.blurb_tr || d.blurb) : d.blurb;
+  return `
+  <article class="card" style="--cat-color:var(--${d.cat}); --cat-dim:var(--${d.cat}-dim);">
+    <div class="card-top">
+      <div class="card-icon">${ICONS[d.cat]}</div>
+      <div class="card-actions">
+        <button class="star-btn" data-id="${d.id}" aria-pressed="${starred}" aria-label="favorite">
+          <svg viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.4" fill="${starred ? 'currentColor':'none'}"><path d="M10 2.6l2.32 4.87 5.28.8-3.8 3.83.9 5.4L10 15l-4.7 2.5.9-5.4-3.8-3.83 5.28-.8z" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-cat">${s[CAT_KEY[d.cat]]} · ${d.maker}</div>
+      <div class="card-name-row">
+        <div class="card-name">${d.name}</div>
+        ${d.mustHave ? `<span class="must-badge">${MUST_ICON}${s.mustHave}</span>` : ""}
+      </div>
+      <div class="card-meta">
+        <span>${formatDate(d.date, state.lang)}</span>
+        <span class="status ${d.status}">${s.status[d.status]}</span>
+      </div>
+      <div class="card-specs">${localSpecs(d).map(sp => `<span class="chip">${sp}</span>`).join("")}</div>
+      <div class="card-blurb">${blurb}</div>
+    </div>
+  </article>`;
+}
+
+function renderGrid(){
+  const filtered = getFiltered();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / state.perPage));
+  if (state.page > totalPages) state.page = totalPages;
+  const start = (state.page - 1) * state.perPage;
+  const pageRows = filtered.slice(start, start + state.perPage);
+
+  const grid = document.getElementById("grid");
+  grid.className = "grid" + (state.view === "list" ? " list" : "");
+
+  if (pageRows.length === 0){
+    grid.innerHTML = `<div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
+        <p>${STR[state.lang].empty}</p></div>`;
+  } else {
+    grid.innerHTML = pageRows.map(renderCard).join("");
+  }
+
+  grid.querySelectorAll(".star-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+      saveFavorites();
+      renderGrid();
+    });
+  });
+
+  renderPagination(filtered.length, totalPages);
+}
+
+function renderPagination(total, totalPages){
+  const pag = document.getElementById("pagination");
+  const info = document.getElementById("page-info");
+  if (totalPages <= 1){ pag.innerHTML = ""; info.textContent = total === 0 ? "" : `${total}`; return; }
+
+  const p = state.page;
+  let pages = [];
+  pages.push(1);
+  if (p > 3) pages.push("…");
+  for (let i = Math.max(2, p-1); i <= Math.min(totalPages-1, p+1); i++) pages.push(i);
+  if (p < totalPages - 2) pages.push("…");
+  if (totalPages > 1) pages.push(totalPages);
+
+  let html = `<button class="page-btn nav" id="pg-prev" ${p===1 ? "disabled":""} aria-label="prev">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+  pages.forEach(n => {
+    if (n === "…"){ html += `<span class="page-ellipsis">…</span>`; }
+    else { html += `<button class="page-btn" data-page="${n}" aria-current="${n===p}">${n}</button>`; }
+  });
+  html += `<button class="page-btn nav" id="pg-next" ${p===totalPages ? "disabled":""} aria-label="next">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+  pag.innerHTML = html;
+
+  pag.querySelectorAll("[data-page]").forEach(btn => {
+    btn.addEventListener("click", () => { state.page = parseInt(btn.dataset.page,10); renderGrid(); window.scrollTo({top: document.querySelector('.controls').offsetTop - 8, behavior:"smooth"}); });
+  });
+  const prev = document.getElementById("pg-prev"), next = document.getElementById("pg-next");
+  if (prev) prev.addEventListener("click", () => { if(state.page>1){ state.page--; renderGrid(); }});
+  if (next) next.addEventListener("click", () => { if(state.page<totalPages){ state.page++; renderGrid(); }});
+
+  const shownStart = (p-1)*state.perPage + 1;
+  const shownEnd = Math.min(p*state.perPage, total);
+  info.textContent = `${shownStart}–${shownEnd} / ${total}`;
+}
+
+/* ============ CONTROL EVENTS ============ */
+document.getElementById("cat-pills").addEventListener("click", (e) => {
+  const btn = e.target.closest(".pill"); if (!btn) return;
+  document.querySelectorAll(".pill").forEach(p => p.setAttribute("aria-pressed","false"));
+  btn.setAttribute("aria-pressed","true");
+  state.cat = btn.dataset.cat; state.page = 1; renderGrid();
+});
+document.getElementById("search").addEventListener("input", (e) => { state.search = e.target.value.trim(); state.page = 1; renderGrid(); });
+document.getElementById("sort").addEventListener("change", (e) => { state.sort = e.target.value; state.page = 1; renderGrid(); });
+document.getElementById("per-page").addEventListener("change", (e) => { state.perPage = parseInt(e.target.value,10); state.page = 1; renderGrid(); });
+document.getElementById("fav-only").addEventListener("click", (e) => { state.favOnly = !state.favOnly; e.currentTarget.setAttribute("aria-pressed", String(state.favOnly)); state.page = 1; renderGrid(); });
+document.getElementById("must-only").addEventListener("click", (e) => { state.mustOnly = !state.mustOnly; e.currentTarget.setAttribute("aria-pressed", String(state.mustOnly)); state.page = 1; renderGrid(); });
+
+function setView(v){
+  state.view = v;
+  document.getElementById("view-grid").setAttribute("aria-pressed", String(v==="grid"));
+  document.getElementById("view-list").setAttribute("aria-pressed", String(v==="list"));
+  renderGrid();
+}
+document.getElementById("view-grid").addEventListener("click", () => setView("grid"));
+document.getElementById("view-list").addEventListener("click", () => setView("list"));
+
+function setTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  document.getElementById("theme-dark").setAttribute("aria-pressed", String(t==="dark"));
+  document.getElementById("theme-light").setAttribute("aria-pressed", String(t==="light"));
+  try{ localStorage.setItem("droplist_theme", t); }catch(e){}
+}
+document.getElementById("theme-dark").addEventListener("click", () => setTheme("dark"));
+document.getElementById("theme-light").addEventListener("click", () => setTheme("light"));
+
+function setLang(l){
+  state.lang = l;
+  document.getElementById("lang-en").setAttribute("aria-pressed", String(l==="en"));
+  document.getElementById("lang-tr").setAttribute("aria-pressed", String(l==="tr"));
+  document.documentElement.setAttribute("lang", l);
+  try{ localStorage.setItem("droplist_lang", l); }catch(e){}
+  applyLang();
+}
+document.getElementById("lang-en").addEventListener("click", () => setLang("en"));
+document.getElementById("lang-tr").addEventListener("click", () => setLang("tr"));
+
+/* ============ DAILY FIND (static hosting: reads generated JSON files) ============ */
+let dailyDoc = null;
+let dailyState = "loading"; // loading | pending | ready
+let historyLoaded = false;
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+function renderDailyContent(){
+  const s = STR[state.lang];
+  const headEl = document.getElementById("daily-headline");
+  const bodyEl = document.getElementById("daily-body");
+  const dateEl = document.getElementById("daily-date");
+  if (dailyState === "loading"){
+    headEl.textContent = s.dailySetup; bodyEl.textContent = ""; dateEl.textContent = "";
+    return;
+  }
+  if (dailyState === "pending" || !dailyDoc){
+    headEl.textContent = s.dailyPending; bodyEl.textContent = ""; dateEl.textContent = "";
+    return;
+  }
+  headEl.textContent = state.lang === "tr" ? dailyDoc.headline_tr : dailyDoc.headline_en;
+  bodyEl.textContent = state.lang === "tr" ? dailyDoc.body_tr : dailyDoc.body_en;
+  dateEl.textContent = formatDate(dailyDoc.date, state.lang);
+}
+
+async function initDaily(){
+  renderDailyContent();
+  try{
+    const res = await fetch("daily_today.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("no daily file yet");
+    dailyDoc = await res.json();
+    dailyState = "ready";
+  }catch(e){
+    dailyState = "pending";
+  }
+  renderDailyContent();
+}
+
+document.getElementById("archive-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("archive-btn");
+  const panel = document.getElementById("archive");
+  const willOpen = !panel.classList.contains("open");
+  panel.classList.toggle("open", willOpen);
+  btn.classList.toggle("open", willOpen);
+  if (willOpen && !historyLoaded){
+    historyLoaded = true;
+    const list = document.getElementById("archive-list");
+    try{
+      const res = await fetch("daily_history.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("no history file yet");
+      const all = await res.json();
+      const docs = all.filter(d => d.date !== todayStr());
+      if (docs.length === 0){
+        list.innerHTML = `<div class="archive-empty">${STR[state.lang].archiveEmpty}</div>`;
+      } else {
+        list.innerHTML = docs.map(d => `
+          <div class="archive-item">
+            <div class="adate">${formatDate(d.date, state.lang)}</div>
+            <div>
+              <div class="ahead">${state.lang==="tr" ? d.headline_tr : d.headline_en}</div>
+              <div class="abody">${state.lang==="tr" ? d.body_tr : d.body_en}</div>
+            </div>
+          </div>`).join("");
+      }
+    }catch(e){
+      list.innerHTML = `<div class="archive-empty">${STR[state.lang].archiveEmpty}</div>`;
+    }
+  }
+});
+
+/* ============ INIT ============ */
+try{ const t = localStorage.getItem("droplist_theme"); if (t) setTheme(t); }catch(e){}
+try{ const l = localStorage.getItem("droplist_lang"); if (l) { state.lang = l; document.getElementById("lang-"+l).setAttribute("aria-pressed","true"); document.getElementById("lang-"+(l==="en"?"tr":"en")).setAttribute("aria-pressed","false"); document.documentElement.setAttribute("lang", l); } }catch(e){}
+
+renderStats();
+applyLang();
+initDaily();
+</script>
+</body>
+</html>
